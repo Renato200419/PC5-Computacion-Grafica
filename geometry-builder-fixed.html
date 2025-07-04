@@ -185,6 +185,7 @@
         const GRID_WIDTH = 7;
         const GRID_HEIGHT = 7;
         const gridPositions = [];
+        let hoverIndicator = null;
         
         // Inicializar posiciones del grid
         for (let x = 0; x < GRID_WIDTH; x++) {
@@ -282,6 +283,17 @@
             basePlane.position.y = 0;
             blockContainer.add(basePlane);
             
+            // Crear indicador de hover
+            const hoverGeometry = new THREE.BoxGeometry(GRID_SIZE * 0.9, 0.05, GRID_SIZE * 0.9);
+            const hoverMaterial = new THREE.MeshBasicMaterial({ 
+                color: 0x00ff00, 
+                transparent: true, 
+                opacity: 0.5
+            });
+            hoverIndicator = new THREE.Mesh(hoverGeometry, hoverMaterial);
+            hoverIndicator.visible = false;
+            blockContainer.add(hoverIndicator);
+            
             // Líneas del grid
             const lineMaterial = new THREE.LineBasicMaterial({ color: 0x00ff00, linewidth: 2 });
             
@@ -310,6 +322,72 @@
         
         function setupTouchInteraction() {
             const touchArea = document.getElementById('touchArea');
+            const raycaster = new THREE.Raycaster();
+            const mouse = new THREE.Vector2();
+            
+            // Crear planos invisibles para cada posición del grid
+            const gridHitPlanes = [];
+            gridPositions.forEach((pos, index) => {
+                const planeGeometry = new THREE.PlaneGeometry(GRID_SIZE * 0.9, GRID_SIZE * 0.9);
+                const planeMaterial = new THREE.MeshBasicMaterial({ 
+                    visible: false,
+                    side: THREE.DoubleSide 
+                });
+                const plane = new THREE.Mesh(planeGeometry, planeMaterial);
+                plane.rotation.x = -Math.PI / 2;
+                plane.position.set(pos.x, 0.01, pos.z);
+                plane.userData = { gridIndex: index };
+                blockContainer.add(plane);
+                gridHitPlanes.push(plane);
+            });
+            
+            // Función para actualizar hover
+            function updateHover(event) {
+                if (!isTracking) {
+                    hoverIndicator.visible = false;
+                    return;
+                }
+                
+                // Obtener coordenadas
+                let clientX, clientY;
+                if (event.type.includes('touch')) {
+                    clientX = event.touches[0]?.clientX || event.changedTouches[0]?.clientX;
+                    clientY = event.touches[0]?.clientY || event.changedTouches[0]?.clientY;
+                } else {
+                    clientX = event.clientX;
+                    clientY = event.clientY;
+                }
+                
+                // Convertir a coordenadas normalizadas
+                mouse.x = (clientX / window.innerWidth) * 2 - 1;
+                mouse.y = -(clientY / window.innerHeight) * 2 + 1;
+                
+                // Raycast
+                raycaster.setFromCamera(mouse, camera);
+                const intersects = raycaster.intersectObjects(gridHitPlanes);
+                
+                if (intersects.length > 0) {
+                    const gridIndex = intersects[0].object.userData.gridIndex;
+                    const gridPos = gridPositions[gridIndex];
+                    
+                    // Mostrar indicador
+                    hoverIndicator.visible = true;
+                    hoverIndicator.position.set(
+                        gridPos.x,
+                        0.025 + gridPos.height * 0.25,
+                        gridPos.z
+                    );
+                    
+                    // Cambiar color según disponibilidad
+                    if (gridPos.height >= 5) {
+                        hoverIndicator.material.color.setHex(0xff0000);
+                    } else {
+                        hoverIndicator.material.color.setHex(0x00ff00);
+                    }
+                } else {
+                    hoverIndicator.visible = false;
+                }
+            }
             
             // Función para manejar toques
             function handleTouch(event) {
@@ -320,17 +398,43 @@
                 
                 event.preventDefault();
                 
-                // Colocar bloque en posición aleatoria del grid
-                const availablePositions = gridPositions.filter(pos => pos.height < 5);
-                if (availablePositions.length > 0) {
-                    const randomPos = availablePositions[Math.floor(Math.random() * availablePositions.length)];
-                    placeBlock(randomPos);
+                // Obtener coordenadas del toque
+                let clientX, clientY;
+                if (event.type === 'touchstart' || event.type === 'touchend') {
+                    clientX = event.changedTouches[0].clientX;
+                    clientY = event.changedTouches[0].clientY;
+                } else {
+                    clientX = event.clientX;
+                    clientY = event.clientY;
+                }
+                
+                // Convertir a coordenadas normalizadas
+                mouse.x = (clientX / window.innerWidth) * 2 - 1;
+                mouse.y = -(clientY / window.innerHeight) * 2 + 1;
+                
+                // Raycast para detectar qué posición del grid fue tocada
+                raycaster.setFromCamera(mouse, camera);
+                const intersects = raycaster.intersectObjects(gridHitPlanes);
+                
+                if (intersects.length > 0) {
+                    const gridIndex = intersects[0].object.userData.gridIndex;
+                    const gridPos = gridPositions[gridIndex];
+                    
+                    // Verificar si la posición está disponible
+                    if (gridPos.height < 5) {
+                        placeBlock(gridPos);
+                        hoverIndicator.visible = false;
+                    } else {
+                        showNotification('Esta posición está llena', 'warning');
+                    }
                 }
             }
             
             // Eventos táctiles
             touchArea.addEventListener('touchstart', handleTouch);
             touchArea.addEventListener('click', handleTouch);
+            touchArea.addEventListener('touchmove', updateHover);
+            touchArea.addEventListener('mousemove', updateHover);
         }
         
         function placeBlock(gridPos) {
