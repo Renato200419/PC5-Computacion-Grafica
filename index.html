@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Geometry Builder AR - Proyecto Final</title>
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
     <style>
         * {
             margin: 0;
@@ -12,117 +13,252 @@
         }
         
         body {
-            font-family: 'Arial', sans-serif;
-            background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%);
+            font-family: 'Inter', sans-serif;
+            background: #000;
+            background-image: 
+                radial-gradient(circle at 20% 50%, rgba(76, 175, 80, 0.1) 0%, transparent 50%),
+                radial-gradient(circle at 80% 20%, rgba(76, 175, 80, 0.08) 0%, transparent 50%),
+                radial-gradient(circle at 40% 80%, rgba(76, 175, 80, 0.06) 0%, transparent 50%);
             min-height: 100vh;
             display: flex;
             align-items: center;
             justify-content: center;
             color: white;
+            overflow-x: hidden;
+            position: relative;
+        }
+        
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: 
+                linear-gradient(45deg, transparent 40%, rgba(76, 175, 80, 0.02) 50%, transparent 60%),
+                linear-gradient(-45deg, transparent 40%, rgba(76, 175, 80, 0.02) 50%, transparent 60%);
+            pointer-events: none;
+            z-index: 1;
         }
         
         .container {
             text-align: center;
             padding: 20px;
-            max-width: 600px;
+            max-width: 800px;
             width: 90%;
+            position: relative;
+            z-index: 2;
+        }
+        
+        .header {
+            margin-bottom: 40px;
         }
         
         h1 {
-            font-size: 2.5em;
-            margin-bottom: 20px;
-            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+            font-family: 'Orbitron', monospace;
+            font-size: 3.5em;
+            font-weight: 900;
+            margin-bottom: 15px;
+            background: linear-gradient(135deg, #4CAF50, #66BB6A, #81C784);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            text-shadow: 0 0 20px rgba(76, 175, 80, 0.3);
+            animation: glow 2s ease-in-out infinite alternate;
+        }
+        
+        @keyframes glow {
+            from { filter: brightness(1); }
+            to { filter: brightness(1.1); }
         }
         
         .subtitle {
-            font-size: 1.2em;
+            font-size: 1.3em;
             margin-bottom: 30px;
-            color: #a8d8ff;
+            color: #B8B8B8;
+            font-weight: 300;
+            letter-spacing: 0.5px;
         }
         
-        .card {
-            background: rgba(255, 255, 255, 0.1);
-            backdrop-filter: blur(10px);
-            border-radius: 20px;
-            padding: 40px;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.3);
-            border: 1px solid rgba(255,255,255,0.2);
+        .main-card {
+            background: rgba(20, 20, 20, 0.8);
+            backdrop-filter: blur(20px);
+            border-radius: 24px;
+            padding: 50px;
+            box-shadow: 
+                0 25px 50px rgba(0,0,0,0.5),
+                0 0 0 1px rgba(76, 175, 80, 0.1),
+                inset 0 1px 0 rgba(255,255,255,0.1);
+            border: 1px solid rgba(76, 175, 80, 0.2);
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .main-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 2px;
+            background: linear-gradient(90deg, transparent, #4CAF50, transparent);
+            animation: shimmer 3s infinite;
+        }
+        
+        @keyframes shimmer {
+            0% { left: -100%; }
+            100% { left: 100%; }
         }
         
         .ods-badge {
-            background: #4CAF50;
+            background: linear-gradient(135deg, #4CAF50, #45a049);
             color: white;
-            padding: 10px 20px;
-            border-radius: 30px;
+            padding: 12px 24px;
+            border-radius: 50px;
             display: inline-block;
-            margin-bottom: 20px;
-            font-weight: bold;
-            box-shadow: 0 4px 10px rgba(76, 175, 80, 0.3);
+            margin-bottom: 30px;
+            font-weight: 600;
+            font-size: 0.95em;
+            box-shadow: 
+                0 8px 20px rgba(76, 175, 80, 0.3),
+                0 0 0 1px rgba(76, 175, 80, 0.2);
+            animation: pulse 2s infinite;
+        }
+        
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.05); }
         }
         
         .description {
-            margin: 20px 0;
-            line-height: 1.6;
-            color: #e0e0e0;
+            margin: 30px 0;
+            line-height: 1.7;
+            color: #D0D0D0;
+            font-size: 1.1em;
+            font-weight: 400;
         }
         
         .tech-stack {
             display: flex;
             justify-content: center;
-            gap: 15px;
-            margin: 30px 0;
+            gap: 12px;
+            margin: 35px 0;
             flex-wrap: wrap;
         }
         
         .tech {
-            background: rgba(255,255,255,0.2);
-            padding: 8px 16px;
-            border-radius: 20px;
+            background: rgba(76, 175, 80, 0.1);
+            border: 1px solid rgba(76, 175, 80, 0.3);
+            padding: 10px 18px;
+            border-radius: 25px;
             font-size: 0.9em;
+            font-weight: 500;
+            color: #B8FFB8;
+            transition: all 0.3s ease;
+        }
+        
+        .tech:hover {
+            background: rgba(76, 175, 80, 0.2);
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(76, 175, 80, 0.2);
         }
         
         .start-button {
-            background: linear-gradient(45deg, #4CAF50, #45a049);
+            background: linear-gradient(135deg, #4CAF50, #45a049);
             color: white;
             border: none;
-            padding: 20px 50px;
-            font-size: 1.3em;
+            padding: 22px 60px;
+            font-size: 1.2em;
+            font-weight: 600;
             border-radius: 50px;
             cursor: pointer;
-            transition: all 0.3s;
-            box-shadow: 0 6px 20px rgba(76, 175, 80, 0.4);
+            transition: all 0.4s ease;
+            box-shadow: 
+                0 10px 30px rgba(76, 175, 80, 0.4),
+                0 0 0 1px rgba(76, 175, 80, 0.3);
             text-decoration: none;
             display: inline-block;
-            margin-top: 20px;
+            margin-top: 30px;
+            font-family: 'Inter', sans-serif;
+            letter-spacing: 0.5px;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .start-button::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
+            transition: left 0.5s;
+        }
+        
+        .start-button:hover::before {
+            left: 100%;
         }
         
         .start-button:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 8px 25px rgba(76, 175, 80, 0.5);
+            transform: translateY(-3px);
+            box-shadow: 
+                0 15px 40px rgba(76, 175, 80, 0.5),
+                0 0 0 1px rgba(76, 175, 80, 0.4);
         }
         
-        .features {
+        .features-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 25px;
+            margin: 40px 0;
+        }
+        
+        .feature-card {
+            background: rgba(40, 40, 40, 0.6);
+            border: 1px solid rgba(76, 175, 80, 0.2);
+            border-radius: 16px;
+            padding: 25px;
             text-align: left;
-            margin: 30px 0;
+            transition: all 0.3s ease;
         }
         
-        .features h3 {
+        .feature-card:hover {
+            background: rgba(40, 40, 40, 0.8);
+            border-color: rgba(76, 175, 80, 0.4);
+            transform: translateY(-5px);
+            box-shadow: 0 10px 25px rgba(76, 175, 80, 0.1);
+        }
+        
+        .feature-card h3 {
+            color: #4CAF50;
             margin-bottom: 15px;
-            color: #a8d8ff;
+            font-size: 1.1em;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 10px;
         }
         
-        .features ul {
+        .feature-card .icon {
+            font-size: 1.3em;
+        }
+        
+        .feature-card ul {
             list-style: none;
         }
         
-        .features li {
-            margin: 10px 0;
-            padding-left: 25px;
+        .feature-card li {
+            margin: 8px 0;
+            padding-left: 20px;
             position: relative;
+            color: #C0C0C0;
+            font-size: 0.95em;
         }
         
-        .features li:before {
-            content: "✓";
+        .feature-card li:before {
+            content: "→";
             position: absolute;
             left: 0;
             color: #4CAF50;
@@ -130,41 +266,123 @@
         }
         
         .requirements {
-            background: rgba(255, 152, 0, 0.2);
-            border: 1px solid rgba(255, 152, 0, 0.4);
-            border-radius: 10px;
-            padding: 15px;
-            margin: 20px 0;
+            background: rgba(255, 152, 0, 0.1);
+            border: 1px solid rgba(255, 152, 0, 0.3);
+            border-radius: 16px;
+            padding: 25px;
+            margin: 30px 0;
             text-align: left;
+            position: relative;
         }
         
         .requirements h4 {
-            margin-bottom: 10px;
+            margin-bottom: 15px;
             color: #FFB74D;
+            font-size: 1.1em;
+            font-weight: 600;
+        }
+        
+        .requirements ul {
+            list-style: none;
+        }
+        
+        .requirements li {
+            margin: 8px 0;
+            color: #E0E0E0;
+            font-size: 0.95em;
         }
         
         .footer {
-            margin-top: 40px;
-            color: #a8d8ff;
+            margin-top: 50px;
+            color: #808080;
             font-size: 0.9em;
+            font-weight: 300;
         }
         
-        @media (max-width: 600px) {
+        .footer p {
+            margin: 5px 0;
+        }
+        
+        /* Partículas flotantes */
+        .particles {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 1;
+        }
+        
+        .particle {
+            position: absolute;
+            width: 4px;
+            height: 4px;
+            background: rgba(76, 175, 80, 0.3);
+            border-radius: 50%;
+            animation: float 6s infinite linear;
+        }
+        
+        @keyframes float {
+            0% { 
+                transform: translateY(100vh) rotate(0deg);
+                opacity: 0;
+            }
+            10% { opacity: 0.3; }
+            90% { opacity: 0.3; }
+            100% { 
+                transform: translateY(-100px) rotate(360deg);
+                opacity: 0;
+            }
+        }
+        
+        @media (max-width: 768px) {
+            h1 {
+                font-size: 2.5em;
+            }
+            
+            .main-card {
+                padding: 30px;
+                margin: 10px;
+            }
+            
+            .features-grid {
+                grid-template-columns: 1fr;
+                gap: 20px;
+            }
+            
+            .start-button {
+                padding: 18px 40px;
+                font-size: 1.1em;
+            }
+        }
+        
+        @media (max-width: 480px) {
             h1 {
                 font-size: 2em;
             }
-            .card {
+            
+            .main-card {
                 padding: 25px;
+            }
+            
+            .description {
+                font-size: 1em;
             }
         }
     </style>
 </head>
 <body>
+    <!-- Partículas flotantes -->
+    <div class="particles"></div>
+    
     <div class="container">
-        <h1>🎮 Geometry Builder AR</h1>
-        <p class="subtitle">Videojuego educativo de realidad aumentada</p>
+        <div class="header">
+            <h1>🎮 Geometry Builder AR</h1>
+            <p class="subtitle">Videojuego educativo de realidad aumentada</p>
+        </div>
         
-        <div class="card">
+        <div class="main-card">
             <div class="ods-badge">
                 🌍 ODS 4 - Educación de Calidad
             </div>
@@ -179,39 +397,94 @@
                 <span class="tech">MindAR</span>
                 <span class="tech">WebXR</span>
                 <span class="tech">JavaScript</span>
+                <span class="tech">AR.js</span>
             </div>
             
-            <div class="features">
-                <h3>Características:</h3>
-                <ul>
-                    <li>Sistema de grid 7x7 tipo Minecraft</li>
-                    <li>4 formas geométricas diferentes</li>
-                    <li>Cálculo de volumen en tiempo real</li>
-                    <li>Sistema de misiones educativas</li>
-                    <li>Tracking de imagen con tarjeta física</li>
-                    <li>Apilamiento vertical de bloques</li>
-                </ul>
+            <div class="features-grid">
+                <div class="feature-card">
+                    <h3><span class="icon">🎯</span> Características Principales</h3>
+                    <ul>
+                        <li>Sistema de grid 11x11 tipo Minecraft</li>
+                        <li>4 formas geométricas diferentes</li>
+                        <li>Cálculo de volumen en tiempo real</li>
+                        <li>Sistema de misiones educativas</li>
+                    </ul>
+                </div>
+                
+                <div class="feature-card">
+                    <h3><span class="icon">🔧</span> Tecnología AR</h3>
+                    <ul>
+                        <li>Tracking de imagen con tarjeta física</li>
+                        <li>Apilamiento vertical de bloques</li>
+                        <li>Interfaz táctil optimizada</li>
+                        <li>Renderizado 3D en tiempo real</li>
+                    </ul>
+                </div>
             </div>
             
             <div class="requirements">
-                <h4>⚠️ Requisitos:</h4>
+                <h4>⚠️ Requisitos del Sistema:</h4>
                 <ul>
-                    <li>• Dispositivo móvil con cámara</li>
+                    <li>• Dispositivo móvil con cámara trasera</li>
                     <li>• Navegador compatible (Chrome/Safari)</li>
                     <li>• Tarjeta física para tracking AR</li>
-                    <li>• Conexión HTTPS (incluida)</li>
+                    <li>• Conexión HTTPS segura (incluida)</li>
+                    <li>• Buena iluminación del entorno</li>
                 </ul>
             </div>
             
             <a href="geometry-builder.html" class="start-button">
-                🚀 Iniciar Aplicación
+                🚀 Iniciar Aplicación AR
             </a>
             
             <div class="footer">
-                <p>Desarrollado con propósitos educativos</p>
+                <p>Desarrollado para promover la educación de calidad</p>
                 <p>Proyecto alineado con los Objetivos de Desarrollo Sostenible</p>
             </div>
         </div>
     </div>
+    
+    <script>
+        // Crear partículas flotantes
+        function createParticles() {
+            const particlesContainer = document.querySelector('.particles');
+            const particleCount = 50;
+            
+            for (let i = 0; i < particleCount; i++) {
+                const particle = document.createElement('div');
+                particle.className = 'particle';
+                particle.style.left = Math.random() * 100 + '%';
+                particle.style.animationDelay = Math.random() * 6 + 's';
+                particle.style.animationDuration = (Math.random() * 3 + 6) + 's';
+                particlesContainer.appendChild(particle);
+            }
+        }
+        
+        // Efecto de entrada suave
+        document.addEventListener('DOMContentLoaded', function() {
+            createParticles();
+            
+            const mainCard = document.querySelector('.main-card');
+            mainCard.style.opacity = '0';
+            mainCard.style.transform = 'translateY(50px)';
+            
+            setTimeout(() => {
+                mainCard.style.transition = 'all 1s ease';
+                mainCard.style.opacity = '1';
+                mainCard.style.transform = 'translateY(0)';
+            }, 300);
+        });
+        
+        // Efecto hover para las tarjetas de características
+        document.querySelectorAll('.tech').forEach(tech => {
+            tech.addEventListener('mouseenter', function() {
+                this.style.boxShadow = '0 5px 20px rgba(76, 175, 80, 0.3)';
+            });
+            
+            tech.addEventListener('mouseleave', function() {
+                this.style.boxShadow = 'none';
+            });
+        });
+    </script>
 </body>
 </html>
