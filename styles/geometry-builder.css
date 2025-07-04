@@ -1,0 +1,383 @@
+/* =====================================================
+   GEOMETRY BUILDER AR - ESTILOS CSS
+   Videojuego educativo de realidad aumentada
+   ===================================================== */
+
+/* --- ESTILOS BASE --- */
+body { 
+    margin: 0; 
+    overflow: hidden;
+    position: fixed;
+    width: 100%;
+    height: 100%;
+    font-family: Arial, sans-serif;
+    background: #000;
+    touch-action: none;
+    -webkit-touch-callout: none;
+    -webkit-user-select: none;
+    user-select: none;
+}
+
+/* --- BOTÓN DE INICIO --- */
+#startButton {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    padding: 25px 50px;
+    font-size: 24px;
+    background: linear-gradient(45deg, #4CAF50, #45a049);
+    color: white;
+    border: none;
+    border-radius: 15px;
+    cursor: pointer;
+    z-index: 9999;
+}
+
+/* --- PANEL DE PUNTUACIÓN --- */
+#scorePanel {
+    position: absolute;
+    top: 20px;
+    left: 20px;
+    background: rgba(0,0,0,0.9);
+    color: white;
+    padding: 20px;
+    border-radius: 15px;
+    z-index: 100;
+}
+
+/* --- ESTADO DE TRACKING --- */
+#trackingStatus {
+    position: absolute;
+    top: 20px;
+    right: 20px;
+    padding: 12px 25px;
+    background: rgba(255, 152, 0, 0.9);
+    color: white;
+    border-radius: 25px;
+    font-weight: bold;
+    z-index: 100;
+}
+
+#trackingStatus.found {
+    background: rgba(76, 175, 80, 0.9);
+}
+
+/* --- SUGERENCIA DE ROTACIÓN --- */
+#rotationHint {
+    position: absolute;
+    bottom: 120px;
+    left: 50%;
+    transform: translateX(-50%);
+    background: rgba(0,0,0,0.7);
+    color: white;
+    padding: 10px 20px;
+    border-radius: 20px;
+    font-size: 14px;
+    z-index: 90;
+    opacity: 0.8;
+    pointer-events: none;
+}
+
+/* --- CONTROLES DE ZOOM --- */
+#zoomControls {
+    position: absolute;
+    right: 20px;
+    bottom: 50%;
+    transform: translateY(50%);
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    z-index: 100;
+}
+
+.zoomBtn {
+    width: 50px;
+    height: 50px;
+    border-radius: 50%;
+    border: 2px solid rgba(255,255,255,0.3);
+    background: rgba(0,0,0,0.8);
+    color: white;
+    font-size: 24px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.3s;
+}
+
+.zoomBtn:hover {
+    background: rgba(76, 175, 80, 0.8);
+    transform: scale(1.1);
+}
+
+/* --- INDICADOR DE ZOOM --- */
+#zoomIndicator {
+    position: absolute;
+    left: 20px;
+    bottom: 20px;
+    background: rgba(0,0,0,0.8);
+    color: white;
+    padding: 10px 20px;
+    border-radius: 20px;
+    font-size: 14px;
+    z-index: 100;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+/* --- SELECTOR DE MODO --- */
+#modeSelector {
+    position: absolute;
+    top: 100px;
+    right: 20px;
+    background: rgba(0,0,0,0.9);
+    padding: 10px;
+    border-radius: 25px;
+    z-index: 100;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.modeBtn {
+    width: 50px;
+    height: 50px;
+    border-radius: 50%;
+    border: 2px solid rgba(255,255,255,0.3);
+    background: rgba(255,255,255,0.1);
+    color: white;
+    font-size: 20px;
+    cursor: pointer;
+    transition: all 0.3s;
+    position: relative;
+}
+
+.modeBtn.active {
+    background: #2196F3;
+    border-color: white;
+    transform: scale(1.1);
+}
+
+.modeBtn:hover {
+    background: rgba(33, 150, 243, 0.5);
+}
+
+/* --- TOOLTIPS --- */
+.tooltip {
+    position: absolute;
+    right: 60px;
+    top: 50%;
+    transform: translateY(-50%);
+    background: rgba(0,0,0,0.9);
+    color: white;
+    padding: 5px 10px;
+    border-radius: 5px;
+    font-size: 12px;
+    white-space: nowrap;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.3s;
+}
+
+.modeBtn:hover .tooltip {
+    opacity: 1;
+}
+
+/* --- BARRA DE HERRAMIENTAS --- */
+#toolbar {
+    position: absolute;
+    bottom: 40px;
+    left: 50%;
+    transform: translateX(-50%);
+    display: flex;
+    gap: 20px;
+    z-index: 100;
+    background: rgba(0,0,0,0.8);
+    padding: 15px;
+    border-radius: 40px;
+}
+
+.shapeBtn {
+    width: 70px;
+    height: 70px;
+    border-radius: 50%;
+    border: 3px solid rgba(255,255,255,0.3);
+    background: rgba(255,255,255,0.1);
+    color: white;
+    font-size: 30px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.3s;
+}
+
+.shapeBtn.active {
+    background: #4CAF50;
+    transform: scale(1.15);
+    box-shadow: 0 0 25px rgba(76, 175, 80, 0.8);
+    border-color: white;
+}
+
+/* --- ÁREA TÁCTIL --- */
+#touchArea {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    z-index: 50;
+    pointer-events: none;
+    display: none;
+}
+
+/* --- NOTIFICACIONES --- */
+.notification {
+    position: fixed;
+    left: 50%;
+    transform: translateX(-50%);
+    padding: 15px 30px;
+    background: #4CAF50;
+    color: white;
+    border-radius: 30px;
+    font-weight: bold;
+    font-size: 18px;
+    z-index: 200;
+    animation: fadeInOut 2s ease;
+    box-shadow: 0 4px 20px rgba(0,0,0,0.3);
+}
+
+/* --- INFORMACIÓN DE DESAFÍO --- */
+#challengeInfo {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    background: rgba(0,0,0,0.95);
+    color: white;
+    padding: 40px;
+    border-radius: 20px;
+    text-align: center;
+    z-index: 9999;
+    max-width: 500px;
+    width: 90%;
+    display: none;
+    box-shadow: 0 10px 40px rgba(0,0,0,0.5);
+}
+
+#challengeInfo h2 {
+    margin: 0 0 20px 0;
+    font-size: 28px;
+    color: #4ECDC4;
+}
+
+#challengeInfo p {
+    margin: 10px 0;
+    font-size: 18px;
+    line-height: 1.5;
+}
+
+#challengeInfo .hint {
+    background: rgba(255,255,255,0.1);
+    padding: 15px;
+    border-radius: 10px;
+    margin: 20px 0;
+    border-left: 4px solid #FFD700;
+}
+
+#challengeInfo button {
+    background: linear-gradient(45deg, #4CAF50, #45a049);
+    color: white;
+    border: none;
+    padding: 15px 30px;
+    border-radius: 25px;
+    font-size: 18px;
+    font-weight: bold;
+    cursor: pointer;
+    margin-top: 20px;
+    transition: all 0.3s;
+}
+
+#challengeInfo button:hover {
+    transform: scale(1.05);
+    box-shadow: 0 5px 20px rgba(76, 175, 80, 0.4);
+}
+
+/* --- CLASES REUTILIZABLES PARA BOTONES --- */
+.gradient-button {
+    color: white;
+    border: none;
+    padding: 10px 20px;
+    border-radius: 20px;
+    cursor: pointer;
+    margin-top: 10px;
+    width: 100%;
+    font-weight: bold;
+    position: relative;
+    z-index: 1000;
+    pointer-events: auto;
+    transition: all 0.3s ease;
+}
+
+.gradient-button:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+}
+
+.gradient-primary {
+    background: linear-gradient(45deg, #FF6B6B, #4ECDC4);
+}
+
+.gradient-purple {
+    background: linear-gradient(45deg, #9C27B0, #673AB7);
+}
+
+.gradient-success {
+    background: linear-gradient(45deg, #4CAF50, #45a049);
+}
+
+.gradient-blue {
+    background: linear-gradient(45deg, #2196F3, #1976D2);
+}
+
+.gradient-orange {
+    background: linear-gradient(45deg, #FF9800, #F57C00);
+}
+
+/* --- ESTILOS PARA NOTIFICACIONES --- */
+.notification.error {
+    background: linear-gradient(45deg, #f44336, #d32f2f);
+}
+
+.notification.success {
+    background: linear-gradient(45deg, #4CAF50, #45a049);
+}
+
+.notification.warning {
+    background: linear-gradient(45deg, #FF9800, #F57C00);
+}
+
+/* --- MENSAJES DE ÉXITO --- */
+.success-message {
+    background: linear-gradient(45deg, #4CAF50, #45a049);
+    color: white;
+    border-radius: 20px;
+    font-weight: bold;
+    box-shadow: 0 10px 40px rgba(76, 175, 80, 0.4);
+    text-align: center;
+}
+
+/* --- ANIMACIONES --- */
+@keyframes fadeInOut {
+    0% { opacity: 0; transform: translate(-50%, 20px); }
+    20% { opacity: 1; transform: translate(-50%, 0); }
+    80% { opacity: 1; transform: translate(-50%, 0); }
+    100% { opacity: 1; transform: translate(-50%, 0); }
+}
+
+@keyframes fadeOut {
+    0% { opacity: 1; }
+    100% { opacity: 0; transform: translate(-50%, -20px); }
+}
