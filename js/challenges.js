@@ -198,7 +198,7 @@ window.startChallenge = function() {
         const challengeBtn = document.getElementById('challengeBtn');
         challengeBtn.textContent = '🏆 Iniciar Desafío';
         challengeBtn.className = 'gradient-button gradient-primary';
-        document.getElementById('missionText').textContent = '🆓 Modo Libre - Puedes seguir construyendo';
+        document.getElementById('missionText').textContent = '🆓 Modo Libre';
         
         window.showNotification('Desafío terminado. Puedes intentarlo de nuevo.', 'info');
         return;

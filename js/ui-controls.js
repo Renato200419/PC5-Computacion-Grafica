@@ -77,14 +77,14 @@ function updateUI() {
         document.getElementById('missionText').textContent = challenge.description + progress;
     } else {
         // Modo libre - sin desafíos activos
-        let mission = '🆓 Modo Libre - Construye lo que quieras';
-        if (window.isChallengeSolved) mission = '¡Completado! Presiona para el siguiente';
-        else if (window.gameState.blocks.length === 0) mission = '🆓 Modo Libre - Presiona "Iniciar Desafío" para empezar';
-        else if (window.gameState.blocks.length >= 50) mission = '🆓 ¡Arquitecto maestro! 50+ bloques';
-        else if (window.gameState.blocks.length >= 20) mission = '🆓 ¡Gran construcción! 20+ bloques';
-        else if (window.gameState.blocks.length >= 10) mission = '🆓 ¡Buena estructura! 10+ bloques';
-        else if (window.gameState.blocks.length >= 5) mission = '🆓 Modo Libre - 5+ bloques';
-        else if (window.gameState.blocks.length >= 1) mission = '🆓 Modo Libre - Sigue construyendo';
+        let mission = '🆓 Modo Libre';
+        if (window.isChallengeSolved) mission = '¡Completado! Siguiente ➡️';
+        else if (window.gameState.blocks.length === 0) mission = '🆓 Modo Libre';
+        else if (window.gameState.blocks.length >= 50) mission = '🆓 ¡Maestro! 50+ bloques';
+        else if (window.gameState.blocks.length >= 20) mission = '🆓 ¡Genial! 20+ bloques';
+        else if (window.gameState.blocks.length >= 10) mission = '🆓 ¡Bien! 10+ bloques';
+        else if (window.gameState.blocks.length >= 5) mission = '🆓 5+ bloques';
+        else if (window.gameState.blocks.length >= 1) mission = '🆓 Sigue construyendo';
         
         document.getElementById('missionText').textContent = mission;
     }
@@ -258,8 +258,8 @@ window.enterSandboxMode = function() {
     });
     
     // Actualizar UI
-    document.getElementById('currentConcept').textContent = '🎨 Modo Libre - ¡Construye lo que quieras!';
-    document.getElementById('missionText').textContent = '🆓 Modo Libre - Sin límites ni restricciones';
+    document.getElementById('currentConcept').textContent = '🎨 Modo Libre';
+    document.getElementById('missionText').textContent = '🆓 Construye libremente';
     const challengeBtn = document.getElementById('challengeBtn');
     challengeBtn.textContent = '🏆 Iniciar Desafío';
     challengeBtn.className = 'gradient-button gradient-primary';
@@ -291,7 +291,7 @@ window.exitSandboxMode = function() {
     
     // Restaurar botón sandbox
     const sandboxBtn = document.getElementById('sandboxBtn');
-    sandboxBtn.textContent = '🎨 Modo Libre (Sandbox)';
+    sandboxBtn.textContent = '🎨 Modo Libre';
     sandboxBtn.className = 'gradient-button gradient-purple';
     sandboxBtn.disabled = false;
     

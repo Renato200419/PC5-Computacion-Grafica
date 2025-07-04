@@ -25,21 +25,16 @@
     <button id="startButton" onclick="startAR()">🎮 Iniciar Geometry Builder AR</button>
     
     <div id="scorePanel" style="display: none;">
-        <h3>📚 Geometry Builder AR</h3>
-        <p style="color: #4CAF50; font-weight: bold;">🌍 ODS 4 - Educación de Calidad</p>
-        <p style="font-size: 12px; color: #a8d8ff;">🎯 Para estudiantes de 9-12 años</p>
-        <p id="currentConcept" style="font-size: 12px; color: #FFD700; margin-top: 8px; padding: 5px 10px; background: rgba(255, 215, 0, 0.1); border-radius: 5px; text-align: center; min-height: 20px;"></p>
-        <hr style="border-color: rgba(255,255,255,0.2); margin: 15px 0;">
-        <p>📦 Bloques: <span id="blockCount">0</span></p>
-        <p>📐 Volumen: <span id="volumeCount">0.0000</span> cm³</p>
-        <p style="color: #FFD700;">🎯 <span id="missionText">Coloca tu primer bloque</span></p>
-        <hr style="border-color: rgba(255,255,255,0.2); margin: 15px 0;">
-        <p style="color: #4CAF50;">⭐ Puntos: <span id="scoreCount">0</span></p>
+        <p id="currentConcept" class="concept-info"></p>
+        <p class="stats-line">📦 <span id="blockCount">0</span> | 📐 <span id="volumeCount">0.0000</span> cm³</p>
+        <p class="mission-text">🎯 <span id="missionText">Coloca tu primer bloque</span></p>
+        <hr class="panel-separator">
+        <p class="score-text">⭐ Puntos: <span id="scoreCount">0</span></p>
         <button id="challengeBtn" onclick="startChallenge()" class="gradient-button gradient-primary">
             🏆 Iniciar Desafío
         </button>
         <button id="sandboxBtn" onclick="enterSandboxMode()" class="gradient-button gradient-purple">
-            🎨 Modo Libre (Sandbox)
+            🎨 Modo Libre
         </button>
     </div>
     
@@ -50,7 +45,7 @@
         <button class="shapeBtn" data-shape="sphere" onclick="selectShape('sphere')">🔵</button>
         <button class="shapeBtn" data-shape="cylinder" onclick="selectShape('cylinder')">🟫</button>
         <button class="shapeBtn" data-shape="pyramid" onclick="selectShape('pyramid')">🔺</button>
-        <div style="width: 20px;"></div>
+        <div class="toolbar-separator"></div>
         <button class="shapeBtn" data-shape="clear" onclick="clearAll()" style="background: rgba(244,67,54,0.5);">🗑️</button>
     </div>
     
