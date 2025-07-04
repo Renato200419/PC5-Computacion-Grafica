@@ -72,6 +72,123 @@
             background: rgba(76, 175, 80, 0.9);
         }
         
+        #rotationHint {
+            position: absolute;
+            bottom: 120px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: rgba(0,0,0,0.7);
+            color: white;
+            padding: 10px 20px;
+            border-radius: 20px;
+            font-size: 14px;
+            z-index: 90;
+            opacity: 0.8;
+            pointer-events: none;
+        }
+        
+        #zoomControls {
+            position: absolute;
+            right: 20px;
+            bottom: 50%;
+            transform: translateY(50%);
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            z-index: 100;
+        }
+        
+        .zoomBtn {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            border: 2px solid rgba(255,255,255,0.3);
+            background: rgba(0,0,0,0.8);
+            color: white;
+            font-size: 24px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.3s;
+        }
+        
+        .zoomBtn:hover {
+            background: rgba(76, 175, 80, 0.8);
+            transform: scale(1.1);
+        }
+        
+        #zoomIndicator {
+            position: absolute;
+            left: 20px;
+            bottom: 20px;
+            background: rgba(0,0,0,0.8);
+            color: white;
+            padding: 10px 20px;
+            border-radius: 20px;
+            font-size: 14px;
+            z-index: 100;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        #modeSelector {
+            position: absolute;
+            top: 100px;
+            right: 20px;
+            background: rgba(0,0,0,0.9);
+            padding: 10px;
+            border-radius: 25px;
+            z-index: 100;
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+        
+        .modeBtn {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            border: 2px solid rgba(255,255,255,0.3);
+            background: rgba(255,255,255,0.1);
+            color: white;
+            font-size: 20px;
+            cursor: pointer;
+            transition: all 0.3s;
+            position: relative;
+        }
+        
+        .modeBtn.active {
+            background: #2196F3;
+            border-color: white;
+            transform: scale(1.1);
+        }
+        
+        .modeBtn:hover {
+            background: rgba(33, 150, 243, 0.5);
+        }
+        
+        .tooltip {
+            position: absolute;
+            right: 60px;
+            top: 50%;
+            transform: translateY(-50%);
+            background: rgba(0,0,0,0.9);
+            color: white;
+            padding: 5px 10px;
+            border-radius: 5px;
+            font-size: 12px;
+            white-space: nowrap;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.3s;
+        }
+        
+        .modeBtn:hover .tooltip {
+            opacity: 1;
+        }
+        
         #toolbar {
             position: absolute;
             bottom: 40px;
@@ -163,6 +280,36 @@
         <button class="shapeBtn" data-shape="clear" onclick="clearAll()" style="background: rgba(244,67,54,0.5);">🗑️</button>
     </div>
     
+    <div id="rotationHint" style="display: none;">
+        <span id="modeHint">🔄 Modo Rotación: Usa 2 dedos o arrastra | Flechas ← → ↑ ↓</span>
+    </div>
+    
+    <div id="zoomControls" style="display: none;">
+        <button class="zoomBtn" onclick="zoomIn()">+</button>
+        <button class="zoomBtn" onclick="zoomOut()">-</button>
+        <button class="zoomBtn" onclick="resetZoom()">⟲</button>
+    </div>
+    
+    <div id="zoomIndicator" style="display: none;">
+        <span>🔍</span>
+        <span id="zoomLevel">100%</span>
+    </div>
+    
+    <div id="modeSelector" style="display: none;">
+        <button class="modeBtn active" data-mode="rotate" onclick="setControlMode('rotate')">
+            🔄
+            <span class="tooltip">Modo Rotación</span>
+        </button>
+        <button class="modeBtn" data-mode="zoom" onclick="setControlMode('zoom')">
+            🔍
+            <span class="tooltip">Modo Zoom</span>
+        </button>
+        <button class="modeBtn" data-mode="place" onclick="setControlMode('place')">
+            ✋
+            <span class="tooltip">Modo Colocar</span>
+        </button>
+    </div>
+    
     <div id="touchArea"></div>
     
     <script type="module">
@@ -186,6 +333,30 @@
         const GRID_HEIGHT = 7;
         const gridPositions = [];
         let hoverIndicator = null;
+        
+        // Variables para rotación del grid
+        let gridRotationY = 0; // Rotación horizontal (izquierda/derecha)
+        let gridRotationX = 0; // Rotación vertical (arriba/abajo)
+        let isRotating = false;
+        let touchStartAngle = 0;
+        let lastTouchAngle = 0;
+        let rotationVelocityY = 0;
+        let rotationVelocityX = 0;
+        let isDragging = false;
+        let dragStartX = 0;
+        let dragStartY = 0;
+        let dragStartRotationY = 0;
+        let dragStartRotationX = 0;
+        
+        // Variables para zoom
+        let currentZoom = 1;
+        const MIN_ZOOM = 0.5;
+        const MAX_ZOOM = 2.5;
+        let isPinching = false;
+        let initialPinchDistance = 0;
+        
+        // Modo de control actual
+        let controlMode = 'rotate'; // 'rotate', 'zoom', 'place'
         
         // Inicializar posiciones del grid
         for (let x = 0; x < GRID_WIDTH; x++) {
@@ -212,6 +383,10 @@
             document.getElementById('trackingStatus').style.display = 'block';
             document.getElementById('toolbar').style.display = 'flex';
             document.getElementById('touchArea').style.display = 'block';
+            document.getElementById('rotationHint').style.display = 'block';
+            document.getElementById('zoomControls').style.display = 'flex';
+            document.getElementById('zoomIndicator').style.display = 'flex';
+            document.getElementById('modeSelector').style.display = 'flex';
             
             try {
                 // Inicializar MindAR
@@ -242,6 +417,9 @@
                 // Crear grid visual
                 createGrid();
                 
+                // Configurar controles de rotación
+                setupRotationControls();
+                
                 // Eventos de tracking
                 targetAnchor.onTargetFound = () => {
                     isTracking = true;
@@ -258,6 +436,27 @@
                 // Iniciar AR
                 await mindarThree.start();
                 renderer.setAnimationLoop(() => {
+                    // Aplicar rotación suave con inercia para ambos ejes
+                    if (Math.abs(rotationVelocityY) > 0.001) {
+                        gridRotationY += rotationVelocityY;
+                        rotationVelocityY *= 0.95; // Fricción
+                    }
+                    
+                    if (Math.abs(rotationVelocityX) > 0.001) {
+                        gridRotationX += rotationVelocityX;
+                        rotationVelocityX *= 0.95; // Fricción
+                    }
+                    
+                    // Limitar rotación vertical para evitar voltear completamente
+                    gridRotationX = Math.max(-Math.PI/3, Math.min(Math.PI/3, gridRotationX));
+                    
+                    // Aplicar rotaciones
+                    blockContainer.rotation.y = gridRotationY;
+                    blockContainer.rotation.x = gridRotationX;
+                    
+                    // Aplicar zoom
+                    blockContainer.scale.set(currentZoom, currentZoom, currentZoom);
+                    
                     renderer.render(scene, camera);
                 });
                 
@@ -343,7 +542,7 @@
             
             // Función para actualizar hover
             function updateHover(event) {
-                if (!isTracking) {
+                if (!isTracking || controlMode !== 'place') {
                     hoverIndicator.visible = false;
                     return;
                 }
@@ -391,6 +590,9 @@
             
             // Función para manejar toques
             function handleTouch(event) {
+                // Solo procesar toques en modo 'place'
+                if (controlMode !== 'place') return;
+                
                 if (!isTracking) {
                     showNotification('Primero apunta a la tarjeta', 'warning');
                     return;
@@ -435,6 +637,222 @@
             touchArea.addEventListener('click', handleTouch);
             touchArea.addEventListener('touchmove', updateHover);
             touchArea.addEventListener('mousemove', updateHover);
+        }
+        
+        function setupRotationControls() {
+            const touchArea = document.getElementById('touchArea');
+            let touches = [];
+            let pinchDistance = 0;
+            
+            // Función para calcular el ángulo entre dos toques
+            function getTouchAngle(touch1, touch2) {
+                return Math.atan2(touch2.clientY - touch1.clientY, touch2.clientX - touch1.clientX);
+            }
+            
+            // Función para obtener el centro entre dos toques
+            function getTouchCenter(touch1, touch2) {
+                return {
+                    x: (touch1.clientX + touch2.clientX) / 2,
+                    y: (touch1.clientY + touch2.clientY) / 2
+                };
+            }
+            
+            // Función para calcular la distancia entre dos toques
+            function getTouchDistance(touch1, touch2) {
+                const dx = touch2.clientX - touch1.clientX;
+                const dy = touch2.clientY - touch1.clientY;
+                return Math.sqrt(dx * dx + dy * dy);
+            }
+            
+            // Función para aplicar zoom
+            function applyZoom(delta) {
+                const zoomSpeed = 0.1;
+                currentZoom = Math.max(MIN_ZOOM, Math.min(MAX_ZOOM, currentZoom + delta * zoomSpeed));
+                updateZoomIndicator();
+            }
+            
+            // Función para actualizar el indicador de zoom
+            function updateZoomIndicator() {
+                const percentage = Math.round(currentZoom * 100);
+                document.getElementById('zoomLevel').textContent = percentage + '%';
+            }
+            
+            // Variables para rastrear el movimiento del centro
+            let lastTouchCenter = null;
+            let touchStartCenter = null;
+            
+            // Manejo de gestos multi-touch para rotación y zoom
+            touchArea.addEventListener('touchstart', (e) => {
+                // Un solo toque en modo rotación o zoom
+                if (e.touches.length === 1 && (controlMode === 'rotate' || controlMode === 'zoom')) {
+                    e.preventDefault();
+                    if (controlMode === 'rotate') {
+                        isDragging = true;
+                        dragStartX = e.touches[0].clientX;
+                        dragStartY = e.touches[0].clientY;
+                        dragStartRotationY = gridRotationY;
+                        dragStartRotationX = gridRotationX;
+                        rotationVelocityY = 0;
+                        rotationVelocityX = 0;
+                    }
+                }
+                
+                // Dos toques para zoom en modo zoom
+                if (e.touches.length === 2 && controlMode === 'zoom') {
+                    e.preventDefault();
+                    touches = Array.from(e.touches);
+                    isPinching = true;
+                    initialPinchDistance = getTouchDistance(touches[0], touches[1]);
+                    pinchDistance = initialPinchDistance;
+                }
+            });
+            
+            touchArea.addEventListener('touchmove', (e) => {
+                // Arrastre con un dedo en modo rotación
+                if (e.touches.length === 1 && isDragging && controlMode === 'rotate') {
+                    e.preventDefault();
+                    const deltaX = e.touches[0].clientX - dragStartX;
+                    const deltaY = e.touches[0].clientY - dragStartY;
+                    
+                    // Rotación horizontal
+                    gridRotationY = dragStartRotationY + (deltaX * 0.01);
+                    blockContainer.rotation.y = gridRotationY;
+                    rotationVelocityY = deltaX * 0.0001;
+                    
+                    // Rotación vertical
+                    gridRotationX = dragStartRotationX - (deltaY * 0.01);
+                    gridRotationX = Math.max(-Math.PI/3, Math.min(Math.PI/3, gridRotationX));
+                    blockContainer.rotation.x = gridRotationX;
+                    rotationVelocityX = -deltaY * 0.0001;
+                }
+                
+                // Zoom con dos dedos en modo zoom
+                if (e.touches.length === 2 && isPinching && controlMode === 'zoom') {
+                    e.preventDefault();
+                    touches = Array.from(e.touches);
+                    const currentDistance = getTouchDistance(touches[0], touches[1]);
+                    const zoomDelta = (currentDistance - pinchDistance) / 100;
+                    applyZoom(zoomDelta * 5);
+                    pinchDistance = currentDistance;
+                }
+            });
+            
+            touchArea.addEventListener('touchend', (e) => {
+                isDragging = false;
+                isPinching = false;
+                isRotating = false;
+            });
+            
+            // Control de zoom con rueda del mouse
+            touchArea.addEventListener('wheel', (e) => {
+                e.preventDefault();
+                const delta = -Math.sign(e.deltaY);
+                applyZoom(delta);
+            });
+            
+            // Controles de mouse para rotación (clic derecho + arrastre)
+            touchArea.addEventListener('mousedown', (e) => {
+                if (e.button === 2) { // Botón derecho
+                    e.preventDefault();
+                    isDragging = true;
+                    dragStartX = e.clientX;
+                    dragStartY = e.clientY;
+                    dragStartRotationY = gridRotationY;
+                    dragStartRotationX = gridRotationX;
+                    rotationVelocityY = 0;
+                    rotationVelocityX = 0;
+                }
+            });
+            
+            document.addEventListener('mousemove', (e) => {
+                if (isDragging) {
+                    e.preventDefault();
+                    const deltaX = e.clientX - dragStartX;
+                    const deltaY = e.clientY - dragStartY;
+                    
+                    // Rotación horizontal
+                    gridRotationY = dragStartRotationY + (deltaX * 0.01);
+                    blockContainer.rotation.y = gridRotationY;
+                    rotationVelocityY = deltaX * 0.0001;
+                    
+                    // Rotación vertical
+                    gridRotationX = dragStartRotationX - (deltaY * 0.01);
+                    gridRotationX = Math.max(-Math.PI/3, Math.min(Math.PI/3, gridRotationX));
+                    blockContainer.rotation.x = gridRotationX;
+                    rotationVelocityX = -deltaY * 0.0001;
+                }
+            });
+            
+            document.addEventListener('mouseup', (e) => {
+                if (e.button === 2) {
+                    isDragging = false;
+                }
+            });
+            
+            // Prevenir menú contextual
+            touchArea.addEventListener('contextmenu', (e) => {
+                e.preventDefault();
+            });
+            
+            // Controles de teclado
+            document.addEventListener('keydown', (e) => {
+                if (!isTracking) return;
+                
+                switch(e.key) {
+                    case 'ArrowLeft':
+                    case 'a':
+                    case 'A':
+                        rotationVelocityY = -0.05;
+                        e.preventDefault();
+                        break;
+                    case 'ArrowRight':
+                    case 'd':
+                    case 'D':
+                        rotationVelocityY = 0.05;
+                        e.preventDefault();
+                        break;
+                    case 'ArrowUp':
+                    case 'w':
+                    case 'W':
+                        rotationVelocityX = -0.05;
+                        e.preventDefault();
+                        break;
+                    case 'ArrowDown':
+                    case 's':
+                    case 'S':
+                        rotationVelocityX = 0.05;
+                        e.preventDefault();
+                        break;
+                    case 'r':
+                    case 'R':
+                        // Reset rotación
+                        gridRotationY = 0;
+                        gridRotationX = 0;
+                        blockContainer.rotation.y = 0;
+                        blockContainer.rotation.x = 0;
+                        rotationVelocityY = 0;
+                        rotationVelocityX = 0;
+                        showNotification('Rotación reiniciada');
+                        e.preventDefault();
+                        break;
+                    case '+':
+                    case '=':
+                        applyZoom(1);
+                        e.preventDefault();
+                        break;
+                    case '-':
+                    case '_':
+                        applyZoom(-1);
+                        e.preventDefault();
+                        break;
+                    case '0':
+                        currentZoom = 1;
+                        updateZoomIndicator();
+                        showNotification('Zoom reiniciado');
+                        e.preventDefault();
+                        break;
+                }
+            });
         }
         
         function placeBlock(gridPos) {
@@ -557,6 +975,78 @@
                 notification.remove();
             }, 2000);
         }
+        
+        // Funciones globales para los botones de zoom
+        window.zoomIn = function() {
+            applyZoom(2);
+            if (navigator.vibrate) navigator.vibrate(30);
+        };
+        
+        window.zoomOut = function() {
+            applyZoom(-2);
+            if (navigator.vibrate) navigator.vibrate(30);
+        };
+        
+        window.resetZoom = function() {
+            currentZoom = 1;
+            updateZoomIndicator();
+            showNotification('Zoom reiniciado');
+            if (navigator.vibrate) navigator.vibrate(50);
+        };
+        
+        // Función para aplicar zoom (hacerla global)
+        function applyZoom(delta) {
+            const zoomSpeed = 0.1;
+            currentZoom = Math.max(MIN_ZOOM, Math.min(MAX_ZOOM, currentZoom + delta * zoomSpeed));
+            updateZoomIndicator();
+        }
+        
+        // Función para actualizar el indicador de zoom
+        function updateZoomIndicator() {
+            const percentage = Math.round(currentZoom * 100);
+            document.getElementById('zoomLevel').textContent = percentage + '%';
+        }
+        
+        // Función para cambiar modo de control
+        window.setControlMode = function(mode) {
+            controlMode = mode;
+            
+            // Actualizar botones
+            document.querySelectorAll('.modeBtn').forEach(btn => {
+                btn.classList.remove('active');
+                if (btn.dataset.mode === mode) {
+                    btn.classList.add('active');
+                }
+            });
+            
+            // Actualizar hint text
+            const hints = {
+                'rotate': '🔄 Modo Rotación: Arrastra con 1 dedo | Flechas ← → ↑ ↓',
+                'zoom': '🔍 Modo Zoom: Pellizco con 2 dedos | Rueda del mouse | Botones +/-',
+                'place': '✋ Modo Colocar: Toca para colocar bloques'
+            };
+            document.getElementById('modeHint').textContent = hints[mode];
+            
+            // Ocultar/mostrar controles según el modo
+            document.getElementById('zoomControls').style.display = mode === 'zoom' ? 'flex' : 'none';
+            document.getElementById('toolbar').style.opacity = mode === 'place' ? '1' : '0.5';
+            
+            // Limpiar estados
+            isDragging = false;
+            isPinching = false;
+            isRotating = false;
+            
+            // Mostrar notificación
+            const modeNames = {
+                'rotate': 'Rotación',
+                'zoom': 'Zoom',
+                'place': 'Colocar Bloques'
+            };
+            showNotification(`Modo ${modeNames[mode]} activado`);
+            
+            // Vibrar
+            if (navigator.vibrate) navigator.vibrate(30);
+        };
     </script>
 </body>
 </html>
