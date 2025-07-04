@@ -285,7 +285,7 @@ export function setupRotationControls() {
         // Un solo toque en modo rotación o zoom
         if (e.touches.length === 1 && (gameState.controlMode === 'rotate' || gameState.controlMode === 'zoom')) {
             e.preventDefault();
-            if (gameState.controlMode === 'rotate') {
+            if (gameState.controlMode === 'rotate' && !gameState.isGridFrozen) {
                 gameState.isDragging = true;
                 gameState.dragStartX = e.touches[0].clientX;
                 gameState.dragStartY = e.touches[0].clientY;
@@ -297,7 +297,7 @@ export function setupRotationControls() {
         }
         
         // Dos toques para zoom en modo zoom
-        if (e.touches.length === 2 && gameState.controlMode === 'zoom') {
+        if (e.touches.length === 2 && gameState.controlMode === 'zoom' && !gameState.isGridFrozen) {
             e.preventDefault();
             touches = Array.from(e.touches);
             gameState.isPinching = true;
@@ -344,14 +344,16 @@ export function setupRotationControls() {
     
     // Control de zoom con rueda del mouse
     touchArea.addEventListener('wheel', (e) => {
-        e.preventDefault();
-        const delta = -Math.sign(e.deltaY);
-        window.applyZoom(delta);
+        if (!gameState.isGridFrozen) {
+            e.preventDefault();
+            const delta = -Math.sign(e.deltaY);
+            window.applyZoom(delta);
+        }
     });
     
     // Controles de mouse para rotación (clic derecho + arrastre)
     touchArea.addEventListener('mousedown', (e) => {
-        if (e.button === 2) { // Botón derecho
+        if (e.button === 2 && !gameState.isGridFrozen) { // Botón derecho y grid no congelado
             e.preventDefault();
             gameState.isDragging = true;
             gameState.dragStartX = e.clientX;

@@ -12,7 +12,7 @@ let currentNotificationIndex = 0;
  * @param {string} text - Texto de la notificación
  * @param {string} type - Tipo de notificación: 'success', 'warning', 'info'
  */
-function showNotification(text, type = 'success') {
+window.showNotification = function showNotification(text, type = 'success') {
     const notification = document.createElement('div');
     notification.className = 'notification';
     
@@ -94,19 +94,31 @@ function updateUI() {
  * Funciones de control de zoom
  */
 window.zoomIn = function() {
-    applyZoom(2);
-    if (navigator.vibrate) navigator.vibrate(30);
+    if (!window.gameState.isGridFrozen) {
+        applyZoom(2);
+        if (navigator.vibrate) navigator.vibrate(30);
+    } else {
+        window.showNotification('Grid congelado - Desbloquea primero', 'warning');
+    }
 };
 
 window.zoomOut = function() {
-    applyZoom(-2);
-    if (navigator.vibrate) navigator.vibrate(30);
+    if (!window.gameState.isGridFrozen) {
+        applyZoom(-2);
+        if (navigator.vibrate) navigator.vibrate(30);
+    } else {
+        window.showNotification('Grid congelado - Desbloquea primero', 'warning');
+    }
 };
 
 window.resetZoom = function() {
-    window.gameState.currentZoom = 1;
-    updateZoomIndicator();
-    if (navigator.vibrate) navigator.vibrate(30);
+    if (!window.gameState.isGridFrozen) {
+        window.gameState.currentZoom = 1;
+        updateZoomIndicator();
+        if (navigator.vibrate) navigator.vibrate(30);
+    } else {
+        window.showNotification('Grid congelado - Desbloquea primero', 'warning');
+    }
 };
 
 /**
@@ -136,11 +148,13 @@ function updateZoomIndicator() {
 window.setControlMode = function(mode) {
     window.gameState.controlMode = mode;
     
-    // Actualizar botones
+    // Actualizar botones (excepto el botón freeze)
     document.querySelectorAll('.modeBtn').forEach(btn => {
-        btn.classList.remove('active');
-        if (btn.dataset.mode === mode) {
-            btn.classList.add('active');
+        if (btn.dataset.mode !== 'freeze') {
+            btn.classList.remove('active');
+            if (btn.dataset.mode === mode) {
+                btn.classList.add('active');
+            }
         }
     });
     
@@ -185,6 +199,34 @@ window.selectShape = function(shape) {
             btn.classList.add('active');
         }
     });
+};
+
+/**
+ * Alterna el estado de congelado del grid
+ */
+window.toggleFreezeGrid = function() {
+    window.gameState.isGridFrozen = !window.gameState.isGridFrozen;
+    
+    const freezeBtn = document.getElementById('freezeBtn');
+    if (window.gameState.isGridFrozen) {
+        freezeBtn.classList.add('active');
+        freezeBtn.innerHTML = '🔓<span class="tooltip">Descongelar Grid</span>';
+        window.showNotification('🔒 Grid congelado - Mueve tu cámara para explorar', 'info');
+        
+        // Detener cualquier rotación en curso
+        window.gameState.rotationVelocityX = 0;
+        window.gameState.rotationVelocityY = 0;
+        window.gameState.isDragging = false;
+        window.gameState.isPinching = false;
+        window.gameState.isRotating = false;
+    } else {
+        freezeBtn.classList.remove('active');
+        freezeBtn.innerHTML = '🔒<span class="tooltip">Congelar Grid</span>';
+        window.showNotification('🔓 Grid desbloqueado - Puedes rotarlo y hacer zoom', 'info');
+    }
+    
+    // Vibrar para confirmar
+    if (navigator.vibrate) navigator.vibrate(30);
 };
 
 /**

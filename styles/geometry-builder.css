@@ -198,6 +198,10 @@ body {
 
 .modeBtn.active {
     background: #2196F3;
+}
+
+.modeBtn[data-mode="freeze"].active {
+    background: #f44336;
     border-color: white;
     transform: scale(1.1);
 }

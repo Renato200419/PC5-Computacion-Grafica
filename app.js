@@ -21,8 +21,8 @@ window.gameState = {
     
     // Sistema de grid
     GRID_SIZE: 0.3,
-    GRID_WIDTH: 10,
-    GRID_HEIGHT: 10,
+    GRID_WIDTH: 11,
+    GRID_HEIGHT: 11,
     gridPositions: [],
     hoverIndicator: null,
     
@@ -50,6 +50,9 @@ window.gameState = {
     // Modo de control actual
     controlMode: 'rotate',
     deleteMode: false,
+    
+    // Estado de grid congelado
+    isGridFrozen: false,
     
     // Sistema de desafíos
     challengeBlocks: [],
@@ -210,27 +213,30 @@ window.startAR = async function() {
             // Usar referencias del estado global
             const state = window.gameState;
             
-            // Aplicar rotación suave con inercia para ambos ejes
-            if (Math.abs(state.rotationVelocityY) > 0.001) {
-                state.gridRotationY += state.rotationVelocityY;
-                state.rotationVelocityY *= 0.95; // Fricción
-            }
-            
-            if (Math.abs(state.rotationVelocityX) > 0.001) {
-                state.gridRotationX += state.rotationVelocityX;
-                state.rotationVelocityX *= 0.95; // Fricción
-            }
-            
-            // Limitar rotación vertical para evitar voltear completamente
-            state.gridRotationX = Math.max(-Math.PI/3, Math.min(Math.PI/3, state.gridRotationX));
-            
-            // Aplicar rotaciones
-            if (state.blockContainer) {
-                state.blockContainer.rotation.y = state.gridRotationY;
-                state.blockContainer.rotation.x = state.gridRotationX;
+            // Solo aplicar movimientos si el grid NO está congelado
+            if (!state.isGridFrozen) {
+                // Aplicar rotación suave con inercia para ambos ejes
+                if (Math.abs(state.rotationVelocityY) > 0.001) {
+                    state.gridRotationY += state.rotationVelocityY;
+                    state.rotationVelocityY *= 0.95; // Fricción
+                }
                 
-                // Aplicar zoom
-                state.blockContainer.scale.set(state.currentZoom, state.currentZoom, state.currentZoom);
+                if (Math.abs(state.rotationVelocityX) > 0.001) {
+                    state.gridRotationX += state.rotationVelocityX;
+                    state.rotationVelocityX *= 0.95; // Fricción
+                }
+                
+                // Limitar rotación vertical para evitar voltear completamente
+                state.gridRotationX = Math.max(-Math.PI/3, Math.min(Math.PI/3, state.gridRotationX));
+                
+                // Aplicar rotaciones
+                if (state.blockContainer) {
+                    state.blockContainer.rotation.y = state.gridRotationY;
+                    state.blockContainer.rotation.x = state.gridRotationX;
+                    
+                    // Aplicar zoom
+                    state.blockContainer.scale.set(state.currentZoom, state.currentZoom, state.currentZoom);
+                }
             }
             
             renderer.render(scene, camera);

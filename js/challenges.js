@@ -62,20 +62,27 @@ const challenges = [
         ]
     },
     {
-        name: "Pirámide de Base",
-        description: "Construye una pirámide: base 2x2 y 1 cubo arriba",
-        targetBlocks: 5,
-        time: 120,
-        points: 100,
-        hint: "Primero la base cuadrada, luego un cubo centrado arriba",
-        educationalConcept: "Construcciones simétricas en 3D",
+        name: "Pirámide Escalonada",
+        description: "Construye una pirámide: base 5x5, nivel medio 3x3, punta 1x1",
+        targetBlocks: 35,
+        time: 300,
+        points: 200,
+        hint: "Base de 25 cubos (5x5), segundo nivel 9 cubos (3x3), arriba 1 cubo",
+        educationalConcept: "Pirámides escalonadas: volumen y simetría",
         requiredShape: 'cube',
         pattern: [
-            // Base 2x2
-            {x: 0, y: 0, z: 0}, {x: 1, y: 0, z: 0},
-            {x: 0, y: 0, z: 1}, {x: 1, y: 0, z: 1},
-            // Punta centrada
-            {x: 0, y: 1, z: 0}
+            // Base 5x5 (25 cubos)
+            {x: -2, y: 0, z: -2}, {x: -1, y: 0, z: -2}, {x: 0, y: 0, z: -2}, {x: 1, y: 0, z: -2}, {x: 2, y: 0, z: -2},
+            {x: -2, y: 0, z: -1}, {x: -1, y: 0, z: -1}, {x: 0, y: 0, z: -1}, {x: 1, y: 0, z: -1}, {x: 2, y: 0, z: -1},
+            {x: -2, y: 0, z: 0}, {x: -1, y: 0, z: 0}, {x: 0, y: 0, z: 0}, {x: 1, y: 0, z: 0}, {x: 2, y: 0, z: 0},
+            {x: -2, y: 0, z: 1}, {x: -1, y: 0, z: 1}, {x: 0, y: 0, z: 1}, {x: 1, y: 0, z: 1}, {x: 2, y: 0, z: 1},
+            {x: -2, y: 0, z: 2}, {x: -1, y: 0, z: 2}, {x: 0, y: 0, z: 2}, {x: 1, y: 0, z: 2}, {x: 2, y: 0, z: 2},
+            // Nivel medio 3x3 (9 cubos)
+            {x: -1, y: 1, z: -1}, {x: 0, y: 1, z: -1}, {x: 1, y: 1, z: -1},
+            {x: -1, y: 1, z: 0}, {x: 0, y: 1, z: 0}, {x: 1, y: 1, z: 0},
+            {x: -1, y: 1, z: 1}, {x: 0, y: 1, z: 1}, {x: 1, y: 1, z: 1},
+            // Punta 1x1 (1 cubo)
+            {x: 0, y: 2, z: 0}
         ]
     },
     {
@@ -156,14 +163,20 @@ const challenges = [
         }
     },
     {
-        name: "Volumen en Acción",
-        description: "Alcanza exactamente 0.1000 cm³ de volumen",
-        targetVolume: 0.1000,
-        time: 180,
-        points: 250,
-        hint: "Cubo=0.0156, Esfera=0.0082, Cilindro=0.0123, Cono=0.0052 cm³",
-        educationalConcept: "Cálculo de volumen: suma de volúmenes individuales",
-        mixedShapes: true
+        name: "🏡 Casa con Jardín",
+        description: "Construye una casa con jardín usando TODAS las formas geométricas",
+        targetBlocks: 28,
+        time: 360,
+        points: 400,
+        hint: "Casa de cubos, columnas de cilindros, cerca de conos, esferas decorativas",
+        educationalConcept: "Integración creativa de todas las formas geométricas aprendidas",
+        mixedShapes: true,
+        requiredShapes: {
+            cube: 12,      // Casa
+            cylinder: 4,   // Columnas
+            pyramid: 8,    // Cerca
+            sphere: 4      // Decoración
+        }
     }
 ];
 
